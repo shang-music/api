@@ -4,6 +4,10 @@ import { BitRate, getSong, Provider } from '../src';
 
 const testCases = [
   {
+    id: 'B5BB7A3D96835B00E3E835B7B5BC5FF7',
+    provider: Provider.kugou,
+  },
+  {
     id: 'A781023E25C4D09EABCB307BE8BD12E8',
     provider: Provider.kugou,
   },

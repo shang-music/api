@@ -198,7 +198,26 @@ class Kugou {
     });
 
     const url = get(result, 'url[0]');
-    const [songName] = get(result, 'fileName', '').split('-');
+    let [songName] = get(result, 'fileName', '').split('-');
+    songName = (songName || '').trim();
+
+    if (!songName) {
+      const candidateResult = await this.request({
+        method: 'GET',
+        url: 'http://krcs.kugou.com/search',
+        qs: {
+          ver: 1,
+          hash: id,
+          man: 'no',
+          client: 'mobi',
+          cmd: '25',
+          behavior: 'play',
+          br: this.bitRateMap[br],
+        },
+      });
+
+      songName = get(candidateResult, 'candidates[0].song', '');
+    }
 
     const imageInfo = await this.request({
       method: 'GET',
