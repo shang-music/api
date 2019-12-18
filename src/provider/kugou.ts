@@ -198,8 +198,14 @@ class Kugou {
     });
 
     const url = get(result, 'url[0]');
-    let [songName] = get(result, 'fileName', '').split('-');
-    songName = (songName || '').trim();
+    const fileName = get(result, 'fileName', '');
+
+    let songName = '';
+
+    if (/-/.test(fileName)) {
+      ([songName] = get(result, 'fileName', '').split('-'));
+      songName = (songName || '').trim();
+    }
 
     if (!songName) {
       const candidateResult = await this.request({
