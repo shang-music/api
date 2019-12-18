@@ -2,7 +2,31 @@ import test from 'ava';
 
 import { BitRate, getSong, Provider } from '../src';
 
+import get = require('lodash/get');
+
 const testCases = [
+  {
+    id: 'cde2ef1e41c58dad5683f50d3cf4da48',
+    provider: Provider.kugou,
+
+    check: {
+      duration: 266,
+      name: '小幸运',
+      // artists: [{ id: 6046, name: '田馥甄' }],
+      'artists[0].id': 6046,
+      'artists[0].name': '田馥甄',
+      // album:
+      //  {
+      //    id: 18758462,
+      //    name: '小幸运',
+      //    img:
+      //     'http://imge.kugou.com/stdmusic/400/20190318/20190318193735709304.jpg',
+      //  },
+      'album.id': 18758462,
+      'album.name': '小幸运',
+      'album.img': 'http://imge.kugou.com/stdmusic/400/20190318/20190318193735709304.jpg',
+    },
+  },
   {
     id: 'B5BB7A3D96835B00E3E835B7B5BC5FF7',
     provider: Provider.kugou,
@@ -23,7 +47,7 @@ const testCases = [
 
 test('getSong', async (t) => {
   await Promise.all(
-    testCases.map(async ({ id, provider }) => {
+    testCases.map(async ({ id, provider, check }) => {
       let data = await getSong(id, provider, BitRate.mid);
 
       let {
@@ -38,6 +62,12 @@ test('getSong', async (t) => {
 
       if (provider === Provider.kugou || provider === Provider.netease) {
         t.truthy(duration);
+      }
+
+      if (check) {
+        Object.entries(check).forEach(([key, value]) => {
+          t.is(get(data, key), value);
+        });
       }
     })
   );
