@@ -26,7 +26,7 @@
     "url": "https://github.com/xinshangshangxin/music/issues"
   },
   "dependencies": {
-    "NeteaseCloudMusicApi": "github:Binaryify/NeteaseCloudMusicApi",
+    "NeteaseCloudMusicApi": "git+https://github.com/Binaryify/NeteaseCloudMusicApi.git",
     "he": "^1.2.0",
     "lodash": "^4.17.14",
     "request": "^2.88.0",
