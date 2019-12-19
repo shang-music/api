@@ -1,6 +1,6 @@
 {
   "name": "@s4p/music-api",
-  "version": "1.15.1",
+  "version": "1.16.2",
   "description": "music api for kugou,netease,xiami",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "url": "https://github.com/xinshangshangxin/music/issues"
   },
   "dependencies": {
-    "NeteaseCloudMusicApi": "Binaryify/NeteaseCloudMusicApi",
+    "NeteaseCloudMusicApi": "^3.25.3",
     "he": "^1.2.0",
     "lodash": "^4.17.14",
     "request": "^2.88.0",
