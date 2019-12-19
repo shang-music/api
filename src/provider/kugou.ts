@@ -181,56 +181,67 @@ class Kugou {
   }
 
   private async getDetail(id: string, br: BitRate = BitRate.mid): Promise<ISong> {
-    const result = await this.request({
-      method: 'GET',
-      url: 'http://trackercdn.kugou.com/i/v2/',
-      qs: {
-        key: createHash('md5')
-          .update(`${id}kgcloudv2`)
-          .digest('hex'),
-        hash: id,
-        appid: '1005',
-        pid: '2',
-        cmd: '25',
-        behavior: 'play',
-        br: this.bitRateMap[br],
-      },
-    });
+    const [r1, r2, r3] = await Promise.all([
+      this.request({
+        method: 'GET',
+        url: 'http://trackercdn.kugou.com/i/v2/',
+        qs: {
+          key: createHash('md5')
+            .update(`${id}kgcloudv2`)
+            .digest('hex'),
+          hash: id,
+          appid: '1005',
+          pid: '2',
+          cmd: '25',
+          behavior: 'play',
+          br: this.bitRateMap[br],
+        },
+      }),
+      this.request({
+        method: 'GET',
+        url: 'http://krcs.kugou.com/search',
+        qs: {
+          ver: 1,
+          hash: id,
+          man: 'no',
+          client: 'mobi',
+          cmd: '25',
+          behavior: 'play',
+          br: this.bitRateMap[br],
+        },
+      }),
+      this.request({
+        method: 'GET',
+        url: 'http://kmrcdn.service.kugou.com/container/v1/image',
+        qs: {
+          appid: '0',
+          clientver: '0',
+          author_image_type: '5',
+          data: `[{"hash":"${id}"}]`,
+        },
+      })
+    ]);
 
-    const url = get(result, 'url[0]');
-    const [songName] = get(result, 'fileName', '').split('-');
-
-    const imageInfo = await this.request({
-      method: 'GET',
-      url: 'http://kmrcdn.service.kugou.com/container/v1/image',
-      qs: {
-        appid: '0',
-        clientver: '0',
-        author_image_type: '5',
-        data: `[{"hash":"${id}"}]`,
-      },
-    });
-
-    const singerName = get(imageInfo, 'data[0].author[0].author_name');
-    const singerId = get(imageInfo, 'data[0].author[0].author_id');
+    const url = get(r1, 'url[0]');
+    const songName = get(r2, 'candidates[0].song', '');
 
     return {
       privilege: url ? Privilege.allow : Privilege.deny,
       id,
-      duration: get(result, 'timeLength'),
+      duration: get(r1, 'timeLength'),
       name: (songName || '').trim(),
       url,
       lrc: '',
       artists: [
         {
-          id: singerId,
-          name: singerName,
+          id: get(r3, 'data[0].author[0].author_id'),
+          name: get(r3, 'data[0].author[0].author_name'),
         },
       ],
       album: {
-        id: get(imageInfo, 'data[0].album[0].album_id'),
-        name: get(imageInfo, 'data[0].album[0].album_name'),
-        img: get(imageInfo, 'data[0].album[0].sizable_cover', '').replace('{size}', '400'),
+        id: get(r3, 'data[0].album[0].album_id'),
+        name: get(r3, 'data[0].album[0].album_name'),
+        img: get(r3, 'data[0].album[0].sizable_cover', '').replace('{size}', '400'),
       },
     };
   }

@@ -57,7 +57,7 @@ let testCaseMap = {
   [Privilege.deny]: [
     {
       provider: Provider.kugou,
-      keyword: '刘瑞琪 晴天 再次寻找周杰伦',
+      keyword: 'I FEEL GOOD EXID HIPPITY HOP',
     },
     {
       provider: Provider.kugou,
