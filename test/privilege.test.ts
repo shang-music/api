@@ -57,7 +57,7 @@ let testCaseMap = {
   [Privilege.deny]: [
     {
       provider: Provider.kugou,
-      keyword: 'I FEEL GOOD EXID HIPPITY HOP',
+      keyword: 'I FEEL GOOD (Remix) EXID HIPPITY HOP',
     },
     {
       provider: Provider.kugou,
