@@ -3,16 +3,12 @@ import get from 'lodash/get';
 import isPlainObject from 'lodash/isPlainObject';
 import { CoreOptions } from 'request';
 import rp from 'request-promise';
-import { promisify } from 'util';
-import { convertableToString, OptionsV2, parseString } from 'xml2js';
 
 import { Privilege } from '../common/privilege';
 import { Provider } from '../common/provider';
 import { RankType } from '../common/rank';
 import { ISearchItem, ISearchQuery, ISearchSong } from '../common/search';
 import { ISong } from '../common/song';
-
-const xml2js = promisify<convertableToString, OptionsV2>(parseString);
 
 class Xiami {
   private defaultConfig = {
@@ -29,45 +25,6 @@ class Xiami {
 
   constructor() {
     this.request = this.setRequestOptions();
-  }
-
-  private static handleProtocolRelativeUrl(url: string) {
-    let regex = /^.*?\/\//;
-    let result = url.replace(regex, 'http://');
-    return result;
-  }
-
-  private static caesar(location: string) {
-    let num = parseInt(location[0], 10);
-    let avgLen = Math.floor(location.slice(1).length / num);
-    let remainder = location.slice(1).length % num;
-
-    let result = [];
-    for (let i = 0; i < remainder; i += 1) {
-      let line = location.slice(i * (avgLen + 1) + 1, (i + 1) * (avgLen + 1) + 1);
-      result.push(line);
-    }
-
-    for (let i = 0; i < num - remainder; i += 1) {
-      let line = location
-        .slice((avgLen + 1) * remainder)
-        .slice(i * avgLen + 1, (i + 1) * avgLen + 1);
-
-      result.push(line);
-    }
-
-    let s = [];
-    for (let i = 0; i < avgLen; i += 1) {
-      for (let j = 0; j < num; j += 1) {
-        s.push(result[j][i]);
-      }
-    }
-
-    for (let i = 0; i < remainder; i += 1) {
-      s.push(result[i].slice(-1));
-    }
-
-    return unescape(s.join('')).replace(/\^/g, '0');
   }
 
   private static parseSongList(songs: any[]) {
@@ -202,14 +159,19 @@ class Xiami {
 
   private async getDetail(id: string): Promise<ISong> {
     let result = await this.request({
-      url: `https://www.xiami.com/widget/xml-single/sid/${id}`,
-      json: false,
+      url: 'http://api.xiami.com/web',
+      method: 'POST',
+      qs: {
+        v: '2.0',
+        app_key: 1,
+        r: 'song/detail',
+        id,
+      },
     });
+    let song = get(result, 'data.song', {});
 
-    let obj = await xml2js(result, { explicitArray: false });
-    let song = get(obj, 'trackList.track', {});
-
-    let privilege = Xiami.getPrivilege(song);
+    const url = song.listen_file;
+    const privilege = url ? Privilege.allow : Privilege.deny;
 
     if (privilege === Privilege.deny) {
       return {
@@ -230,7 +192,7 @@ class Xiami {
       privilege,
       id: `${song.song_id}`,
       name: get(song, 'song_name', ''),
-      url: Xiami.handleProtocolRelativeUrl(Xiami.caesar(song.location)),
+      url,
       artists: [
         {
           id: get(song, 'artist_id'),
@@ -240,8 +202,9 @@ class Xiami {
       album: {
         id: `${song.album_id}`,
         name: decode(song.album_name),
-        img: Xiami.handleProtocolRelativeUrl(`${song.album_cover}`),
+        img: song.logo,
       },
+      lrc: get(song, 'lyric'),
     };
   }
 

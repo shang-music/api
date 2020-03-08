@@ -87,7 +87,7 @@ let testCaseMap = {
     },
     {
       provider: Provider.xiami,
-      id: 'mQX8iP8fbe8',
+      id: '1776156051',
     },
   ],
 };
