@@ -47,11 +47,11 @@ let testCaseMap = {
 
     {
       provider: Provider.xiami,
-      keyword: 'Aragaki Yui',
+      keyword: 'Aragaki Yui Make my day',
     },
     {
       provider: Provider.xiami,
-      id: '1769737211',
+      id: '3439961',
     },
   ],
   [Privilege.deny]: [
