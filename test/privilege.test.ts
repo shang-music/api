@@ -47,7 +47,7 @@ let testCaseMap = {
 
     {
       provider: Provider.xiami,
-      keyword: 'Aragaki Yui Make my day',
+      keyword: '新垣结衣Make my day',
     },
     {
       provider: Provider.xiami,
