@@ -140,7 +140,7 @@ test('playlist should have privilege', async (t) => {
       },
       {
         provider: Provider.netease,
-        playlist: '24381616',
+        playlist: '2471711264',
       },
       {
         provider: Provider.xiami,

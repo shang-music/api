@@ -9,8 +9,8 @@ test('playlist kugou', async (t) => {
 });
 
 test('playlist netease', async (t) => {
-  let songs = await playlist(Provider.netease, '24381616');
-  t.true(songs.length > 10);
+  let songs = await playlist(Provider.netease, '2471711264');
+  t.is(songs.length, 10);
   t.is(songs[0].provider, Provider.netease);
 });
 
