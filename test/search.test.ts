@@ -9,7 +9,7 @@ const schema = {
     .valid([Privilege.allow, Privilege.deny])
     .required(),
   provider: Joi.string()
-    .valid([Provider.kugou, Provider.netease, Provider.xiami])
+    .valid([Provider.kugou, Provider.netease])
     .required(),
   id: Joi.string().required(),
   name: Joi.string().required(),
@@ -51,15 +51,13 @@ function shouldValid(searchResult: ISearchItem | ISearchItem[]) {
 test('search "Aragaki Yui" limit 5', async (t) => {
   let arr = await search({ keyword: 'Aragaki Yui', limit: 5 });
 
-  t.is(arr.length, 3 * 5);
+  t.is(arr.length, 2 * 5);
 
   for (let i = 0, l = arr.length; i < l; i += 1) {
-    if (i % 3 === 0) {
+    if (i % 2 === 0) {
       t.is(arr[i].provider, Provider.kugou);
-    } else if (i % 3 === 1) {
+    } else if (i % 2 === 1) {
       t.is(arr[i].provider, Provider.netease);
-    } else if (i % 3 === 2) {
-      t.is(arr[i].provider, Provider.xiami);
     }
   }
 
@@ -96,24 +94,10 @@ test('search "Aragaki Yui" with netease', async (t) => {
   t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
 });
 
-test('search "Aragaki Yui" with xiami limit 1', async (t) => {
-  let arr = await search({ keyword: 'Aragaki Yui', limit: 1 }, Provider.xiami);
-
-  t.is(arr.length, 1);
-  t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
-});
-
-test('search "Aragaki Yui" with xiami', async (t) => {
-  let arr = await search('Aragaki Yui', Provider.xiami);
-
-  t.is(arr.length, 10);
-  t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
-});
-
 test('search "Aragaki Yui"', async (t) => {
   let arr = await search('Aragaki Yui');
 
-  t.is(arr.length, 30);
+  t.is(arr.length, 20);
   t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
 });
 
@@ -140,13 +124,6 @@ test('search with not support query', async (t) => {
 
   t.truthy(err);
   t.is(err.message, 'query not support');
-});
-
-test('search with kugou and xiami provider', async (t) => {
-  let arr = await search('Aragaki Yui', [Provider.kugou, Provider.xiami]);
-
-  t.is(arr.length, 20);
-  t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
 });
 
 test('search with not support provider', async (t) => {

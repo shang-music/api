@@ -14,12 +14,6 @@ test('playlist netease', async (t) => {
   t.is(songs[0].provider, Provider.netease);
 });
 
-test('playlist xiami', async (t) => {
-  let songs = await playlist(Provider.xiami, '277845506');
-  t.true(songs.length > 10);
-  t.is(songs[0].provider, Provider.xiami);
-});
-
 test('playlist with not support provider', async (t) => {
   let err;
   try {

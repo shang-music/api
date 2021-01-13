@@ -71,7 +71,7 @@ if you want to control special provider, you can use `setRequestOptions`
 ```ts
 function setRequestOptions(
   options?: { proxy: string },
-  providers = [Provider.kugou, Provider.netease, Provider.xiami]
+  providers = [Provider.kugou, Provider.netease]
 ): void;
 
 // disable all proxy, use system request

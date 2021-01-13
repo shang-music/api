@@ -1,23 +1,22 @@
 {
   "name": "@s4p/music-api",
   "version": "1.17.0",
-  "description": "music api for kugou,netease,xiami",
+  "description": "music api for kugou,netease",
   "main": "index.js",
   "scripts": {
-    "start": "TS_NODE_FILES=true ./node_modules/.bin/ts-node src/index.ts",
+    "start": "cross-env TS_NODE_FILES=true ./node_modules/.bin/ts-node src/index.ts",
     "lint": "gulp lint",
     "lint-fix": "./node_modules/.bin/eslint src/**/*.ts --fix",
     "watch": "gulp",
     "build": "gulp build",
-    "test": "TS_NODE_FILES=true ava --fail-fast -v",
-    "coverage": "TS_NODE_FILES=true nyc ava --fail-fast -v"
+    "test": "cross-env TS_NODE_FILES=true ava --fail-fast -v",
+    "coverage": "cross-env TS_NODE_FILES=true nyc ava --fail-fast -v"
   },
   "keywords": [
     "music",
     "api",
     "kugou",
-    "netease",
-    "xiami"
+    "netease"
   ],
   "author": "xinshangshangxin",
   "license": "MIT",
@@ -44,6 +43,7 @@
     "@types/xml2js": "^0.4.4",
     "@typescript-eslint/eslint-plugin": "^1.4.2",
     "ava": "^1.4.1",
+    "cross-env": "^7.0.3",
     "del": "^4.1.1",
     "eslint": "^5.14.1",
     "eslint-config-airbnb-base": "^13.1.0",

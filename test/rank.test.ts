@@ -32,16 +32,6 @@ test('new rank netease', async (t) => {
   t.true(!!songs[0].id);
 });
 
-test('new rank xiami', async (t) => {
-  let songs = await rank(Provider.xiami, RankType.new, 3);
-  t.true(songs.length === 3);
-});
-
-test('hot rank xiami', async (t) => {
-  let songs = await rank(Provider.xiami, RankType.hot, 11);
-  t.true(songs.length === 11);
-});
-
 test('rank with not support provider', async (t) => {
   let err;
   try {

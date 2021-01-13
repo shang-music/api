@@ -39,10 +39,6 @@ const testCases = [
     id: '29829683',
     provider: Provider.netease,
   },
-  {
-    id: '1774490672',
-    provider: Provider.xiami,
-  },
 ];
 
 test('getSong', async (t) => {

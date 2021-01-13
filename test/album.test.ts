@@ -24,17 +24,6 @@ test('album netease', async (t) => {
   });
 });
 
-test('album xiami', async (t) => {
-  let songs = await album(Provider.xiami, '459960');
-  t.true(songs.length === 10);
-
-  songs.forEach(({ id, name, artists: [{ name: singer }] }) => {
-    t.true(!!id);
-    t.true(!!name);
-    t.true(!!singer);
-  });
-});
-
 test('album with not support provider', async (t) => {
   let err;
   try {

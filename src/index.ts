@@ -11,15 +11,13 @@ import { ISearchItem, ISearchQuery, ISearchSong } from './common/search';
 import { BitRate, ISong } from './common/song';
 import { Kugou } from './provider/kugou';
 import { Netease } from './provider/netease';
-import { Xiami } from './provider/xiami';
 
 const kugouMusic = new Kugou();
 const neteaseMusic = new Netease();
-const xiamiMusic = new Xiami();
 
 function setRequestOptions(
   options?: CoreOptions,
-  providers = [Provider.kugou, Provider.netease, Provider.xiami]
+  providers = [Provider.kugou, Provider.netease]
 ) {
   providers.forEach((provider) => {
     if (provider === Provider.kugou) {
@@ -27,8 +25,6 @@ function setRequestOptions(
     } else if (provider === Provider.netease) {
       // netease only support proxy config
       neteaseMusic.setRequestOptions(options);
-    } else if (provider === Provider.xiami) {
-      xiamiMusic.setRequestOptions(options);
     }
   });
 }
@@ -46,8 +42,6 @@ async function searchOne(query: string | ISearchQuery, provider: Provider): Prom
     result = await kugouMusic.search(query);
   } else if (provider === Provider.netease) {
     result = await neteaseMusic.search(query);
-  } else if (provider === Provider.xiami) {
-    result = await xiamiMusic.search(query);
   } else {
     throw new Error(`${provider} not support`);
   }
@@ -63,7 +57,7 @@ async function search(
 ): Promise<ISearchItem[]> {
   let providers: Provider[] = [];
   if (isUndefined(provider)) {
-    providers = [Provider.kugou, Provider.netease, Provider.xiami];
+    providers = [Provider.kugou, Provider.netease];
   } else if (isArray(provider)) {
     providers = provider;
   } else {
@@ -100,9 +94,6 @@ async function getSong(id: string, provider: Provider, br?: BitRate): Promise<IS
   if (provider === Provider.netease) {
     return neteaseMusic.getSong(id, br);
   }
-  if (provider === Provider.xiami) {
-    return xiamiMusic.getSong(id);
-  }
   throw new Error(`${provider} not support`);
 }
 
@@ -118,9 +109,6 @@ async function rank(
   if (provider === Provider.netease) {
     return neteaseMusic.rank(rankType, limit, skip);
   }
-  if (provider === Provider.xiami) {
-    return xiamiMusic.rank(rankType, limit, skip);
-  }
   throw new Error(`${provider} not support`);
 }
 
@@ -131,9 +119,6 @@ async function playlist(provider: Provider, id: string): Promise<ISearchItem[]> 
   if (provider === Provider.netease) {
     return neteaseMusic.playlist(id);
   }
-  if (provider === Provider.xiami) {
-    return xiamiMusic.playlist(id);
-  }
   throw new Error(`${provider} not support`);
 }
 
@@ -143,9 +128,6 @@ async function album(provider: Provider, id: string): Promise<ISearchItem[]> {
   }
   if (provider === Provider.netease) {
     return neteaseMusic.album(id);
-  }
-  if (provider === Provider.xiami) {
-    return xiamiMusic.album(id);
   }
   throw new Error(`${provider} not support`);
 }

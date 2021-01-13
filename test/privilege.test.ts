@@ -44,15 +44,6 @@ let testCaseMap = {
       provider: Provider.netease,
       id: '1344897943',
     },
-
-    {
-      provider: Provider.xiami,
-      keyword: '新垣结衣Make my day',
-    },
-    {
-      provider: Provider.xiami,
-      id: '3439961',
-    },
   ],
   [Privilege.deny]: [
     {
@@ -79,15 +70,6 @@ let testCaseMap = {
     {
       provider: Provider.netease,
       id: '1345983806',
-    },
-
-    {
-      provider: Provider.xiami,
-      keyword: '告白气球 周杰伦的床边故事',
-    },
-    {
-      provider: Provider.xiami,
-      id: '1776156051',
     },
   ],
 };
@@ -122,7 +104,7 @@ test('test privilege', async (t) => {
 
 test('rank should have privilege', async (t) => {
   await Promise.all(
-    [Provider.kugou, Provider.netease, Provider.xiami].map(async (provider) => {
+    [Provider.kugou, Provider.netease].map(async (provider) => {
       let list = await rank(provider, RankType.new);
       list.forEach((song) => {
         t.truthy(song.privilege);
@@ -141,10 +123,6 @@ test('playlist should have privilege', async (t) => {
       {
         provider: Provider.netease,
         playlist: '2471711264',
-      },
-      {
-        provider: Provider.xiami,
-        playlist: '277845506',
       },
     ].map(async ({ provider, playlist: id }) => {
       let list = await playlist(provider, id);
