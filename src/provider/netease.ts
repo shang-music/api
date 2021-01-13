@@ -226,7 +226,7 @@ export class Netease {
   }
 
   private async lyric(id: string) {
-    let result = await neteaseLyric({ id }, this.request);
+    let result = await neteaseLyric({ id, cookie: {} }, this.request);
 
     return {
       lrc: get(result, 'body.lrc.lyric'),
