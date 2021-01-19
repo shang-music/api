@@ -48,8 +48,8 @@ function shouldValid(searchResult: ISearchItem | ISearchItem[]) {
   });
 }
 
-test('search "Aragaki Yui" limit 5', async (t) => {
-  let arr = await search({ keyword: 'Aragaki Yui', limit: 5 });
+test('search "新垣结衣" limit 5', async (t) => {
+  let arr = await search({ keyword: '新垣结衣', limit: 5 });
 
   t.is(arr.length, 2 * 5);
 
@@ -64,38 +64,38 @@ test('search "Aragaki Yui" limit 5', async (t) => {
   t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
 });
 
-test('search "Aragaki Yui" with kugou limit 1', async (t) => {
-  let arr = await search({ keyword: 'Aragaki Yui', limit: 1 }, Provider.kugou);
+test('search "新垣结衣" with kugou limit 1', async (t) => {
+  let arr = await search({ keyword: '新垣结衣', limit: 1 }, Provider.kugou);
 
   t.is(arr.length, 1);
 
   t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
 });
 
-test('search "Aragaki Yui" with kugou', async (t) => {
-  let arr = await search('Aragaki Yui', Provider.kugou);
+test('search "新垣结衣" with kugou', async (t) => {
+  let arr = await search('新垣结衣', Provider.kugou);
 
   t.is(arr.length, 10);
 
   t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
 });
 
-test('search "Aragaki Yui" with netease limit 1', async (t) => {
-  let arr = await search({ keyword: 'Aragaki Yui', limit: 1 }, Provider.netease);
+test('search "新垣结衣" with netease limit 1', async (t) => {
+  let arr = await search({ keyword: '新垣结衣', limit: 1 }, Provider.netease);
 
   t.is(arr.length, 1);
   t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
 });
 
-test('search "Aragaki Yui" with netease', async (t) => {
-  let arr = await search('Aragaki Yui', Provider.netease);
+test('search "新垣结衣" with netease', async (t) => {
+  let arr = await search('新垣结衣', Provider.netease);
 
   t.is(arr.length, 10);
   t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
 });
 
-test('search "Aragaki Yui"', async (t) => {
-  let arr = await search('Aragaki Yui');
+test('search "新垣结衣"', async (t) => {
+  let arr = await search('新垣结衣');
 
   t.is(arr.length, 20);
   t.deepEqual(shouldValid(arr), new Array(arr.length).fill(null));
@@ -129,7 +129,7 @@ test('search with not support query', async (t) => {
 test('search with not support provider', async (t) => {
   let err;
   try {
-    await search('Aragaki Yui', 'unknown-provider' as Provider);
+    await search('新垣结衣', 'unknown-provider' as Provider);
   } catch (e) {
     err = e;
   }
