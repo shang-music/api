@@ -4,13 +4,14 @@ import isArray from 'lodash/isArray';
 import isUndefined from 'lodash/isUndefined';
 import maxBy from 'lodash/maxBy';
 import { CoreOptions } from 'request';
-
 import { Provider } from './common/provider';
 import { RankType } from './common/rank';
 import { ISearchItem, ISearchQuery, ISearchSong } from './common/search';
 import { BitRate, ISong } from './common/song';
+import { Adapter } from './provider/adapter';
 import { Kugou } from './provider/kugou';
 import { Netease } from './provider/netease';
+
 
 const kugouMusic = new Kugou();
 const neteaseMusic = new Netease();
@@ -133,6 +134,7 @@ async function album(provider: Provider, id: string): Promise<ISearchItem[]> {
 }
 
 export {
+  Adapter,
   search,
   rank,
   getSong,
