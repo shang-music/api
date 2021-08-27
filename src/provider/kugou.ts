@@ -1,14 +1,15 @@
+import { createHash } from 'crypto';
 import get from 'lodash/get';
 import { CoreOptions } from 'request';
 import rp from 'request-promise';
-import { createHash } from 'crypto';
-
 import { Privilege } from '../common/privilege';
 import { Provider } from '../common/provider';
 import { RankType } from '../common/rank';
 import { ISearchItem, ISearchQuery, ISearchSong } from '../common/search';
 import { BitRate, ISong } from '../common/song';
 import { formatStr } from '../common/util';
+import { decodeName } from './helper';
+
 
 class Kugou {
   private defaultConfig = {
@@ -147,12 +148,19 @@ class Kugou {
     limit = 10,
   }: ISearchQuery): Promise<ISearchSong[]> {
     let result = await this.request({
-      url: 'http://mobilecdn.kugou.com/api/v3/search/song',
+      url: 'http://ioscdn.kugou.com/api/v3/search/song',
       qs: {
-        format: 'json',
         keyword,
         page: parseInt(`${skip / limit}`, 10),
         pagesize: limit,
+
+        showtype: 10,
+        plat: 2,
+        version: 7910,
+        tag: 1,
+        correct: 1,
+        privilege: 1,
+        sver: 5,
       },
     });
 
@@ -162,8 +170,8 @@ class Kugou {
       return {
         privilege: Kugou.getPrivilege(song),
         id: Kugou.getId(song),
-        name: song.songname,
-        artists: get(song, 'singername', '')
+        name: decodeName(song.songname),
+        artists: decodeName(get(song, 'singername', ''))
           .split('、')
           .map((name: any) => {
             return {
@@ -175,7 +183,6 @@ class Kugou {
           name: song.album_name,
         },
         duration: song.duration,
-        mvId: song.mvhash,
       };
     });
   }
