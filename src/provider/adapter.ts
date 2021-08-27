@@ -83,12 +83,16 @@ class Adapter {
   }
 
   async getSong(id: string): Promise<ISong> {
-    const { result, qs = {}, ...requestOptions } = this.config.song;
+    const {
+      result, url, qs = {}, ...requestOptions
+    } = this.config.song;
 
     let qsTransformed = Adapter.replaceQs(qs, { id });
+    let urlTransformed = Adapter.replaceString(url, { id });
 
     const data = await this.request({
       ...requestOptions,
+      url: urlTransformed,
       qs: qsTransformed,
     });
 
@@ -100,16 +104,26 @@ class Adapter {
   }
 
   async getUrl(id: string): Promise<string> {
-    const { result, qs = {}, ...requestOptions } = this.config.url;
+    const {
+      result, qs = {}, url, ...requestOptions
+    } = this.config.url;
 
     let qsTransformed = Adapter.replaceQs(qs, { id });
+    let urlTransformed = Adapter.replaceString(url, { id });
 
     const data = await this.request({
       ...requestOptions,
+      url: urlTransformed,
       qs: qsTransformed,
     });
 
     return Adapter.transformResult(data, result, { input: 'json', output: 'string' });
+  }
+
+  private static replaceString(str: string, params: Record<string, any>) {
+    return str.replace(/{{(.+)}}/, (_, $1) => {
+      return params[$1.trim()];
+    });
   }
 
   private static replaceQs(qs: Record<string, string | number>, params: Record<string, any>) {
@@ -118,9 +132,7 @@ class Adapter {
         return [key, value];
       }
 
-      return [key, value.replace(/{{(.+)}}/, (_, $1) => {
-        return params[$1.trim()];
-      })];
+      return [key, Adapter.replaceString(value, params)];
     }));
   }
 
