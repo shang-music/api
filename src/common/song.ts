@@ -32,5 +32,6 @@ export interface ISong {
   duration?: number;
   mvId?: string;
   klyric?: string;
+  picture?: string;
   extra?: any;
 }

@@ -8,17 +8,23 @@ import { ISong } from '../common/song';
 export interface IAdapterConfig {
   provider?: string;
   request: Record<string, unknown>;
-  search: {
+
+  searchOne?: {
     url: string;
     qs: Record<string, string | number>;
     result: string;
   };
-  song: {
+  search?: {
     url: string;
     qs: Record<string, string | number>;
     result: string;
   };
-  url: {
+  song?: {
+    url: string;
+    qs: Record<string, string | number>;
+    result: string;
+  };
+  url?: {
     url: string;
     qs: Record<string, string | number>;
     result: string;
@@ -37,6 +43,27 @@ class Adapter {
     this.request = rp.defaults(options);
 
     return this.request;
+  }
+
+  async searchOne(keyword: string): Promise<ISong> {
+    const {
+      result, url, qs = {}, ...requestOptions
+    } = this.getConfig('searchOne');
+
+    let qsTransformed = Adapter.replaceQs(qs, { keyword });
+    let urlTransformed = Adapter.replaceString(url, { keyword });
+
+    const data = await this.request({
+      ...requestOptions,
+      url: urlTransformed,
+      qs: qsTransformed,
+    });
+
+    const song = await Adapter.transformResult(data, result);
+    return {
+      provider: this.config.provider || 'adapter',
+      ...song,
+    };
   }
 
   async search(query: string | ISearchQuery): Promise<ISearchSong[]> {
@@ -61,7 +88,7 @@ class Adapter {
       throw new Error('query not support');
     }
 
-    const { result, qs = {}, ...searchOptions } = this.config.search;
+    const { result, qs = {}, ...searchOptions } = this.getConfig('search');
 
     let qsTransformed = Adapter.replaceQs(qs, params);
 
@@ -85,7 +112,7 @@ class Adapter {
   async getSong(id: string): Promise<ISong> {
     const {
       result, url, qs = {}, ...requestOptions
-    } = this.config.song;
+    } = this.getConfig('song');
 
     let qsTransformed = Adapter.replaceQs(qs, { id });
     let urlTransformed = Adapter.replaceString(url, { id });
@@ -106,7 +133,7 @@ class Adapter {
   async getUrl(id: string): Promise<string> {
     const {
       result, qs = {}, url, ...requestOptions
-    } = this.config.url;
+    } = this.getConfig('url');
 
     let qsTransformed = Adapter.replaceQs(qs, { id });
     let urlTransformed = Adapter.replaceString(url, { id });
@@ -142,6 +169,15 @@ class Adapter {
     options: Record<string, unknown> = { input: 'json', output: 'json' }
   ): Promise<T> {
     return jq(rule, result, options) as Promise<any>;
+  }
+
+  private getConfig(key: 'searchOne' | 'search' | 'song' | 'url') {
+    const v = this.config[key];
+
+    if (v === undefined) {
+      throw new Error(`no support for provider: ${this.config.provider}; key: ${key}`);
+    }
+    return v;
   }
 }
 
