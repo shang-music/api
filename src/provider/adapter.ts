@@ -1,5 +1,5 @@
 import { fromPairs } from 'lodash';
-import { run as jq } from 'node-jq';
+import { run as jq } from '@s4p/node-jq';
 import { CoreOptions } from 'request';
 import rp from 'request-promise';
 import { ISearchQuery, ISearchSong } from '../common/search';
@@ -50,8 +50,8 @@ class Adapter {
       result, url, qs = {}, ...requestOptions
     } = this.getConfig('searchOne');
 
-    let qsTransformed = Adapter.replaceQs(qs, { keyword });
-    let urlTransformed = Adapter.replaceString(url, { keyword });
+    let qsTransformed = await Adapter.replaceQs(qs, { keyword });
+    let urlTransformed = await Adapter.replaceString(url, { keyword });
 
     const data = await this.request({
       ...requestOptions,
@@ -59,7 +59,9 @@ class Adapter {
       qs: qsTransformed,
     });
 
-    const song = await Adapter.transformResult(data, result);
+    const rule = await Adapter.replaceString(result, { keyword });
+
+    const song = await Adapter.transformResult(data, rule);
     return {
       provider: this.config.provider || 'adapter',
       ...song,
@@ -114,8 +116,8 @@ class Adapter {
       result, url, qs = {}, ...requestOptions
     } = this.getConfig('song');
 
-    let qsTransformed = Adapter.replaceQs(qs, { id });
-    let urlTransformed = Adapter.replaceString(url, { id });
+    let qsTransformed = await Adapter.replaceQs(qs, { id });
+    let urlTransformed = await Adapter.replaceString(url, { id });
 
     const data = await this.request({
       ...requestOptions,
@@ -135,8 +137,8 @@ class Adapter {
       result, qs = {}, url, ...requestOptions
     } = this.getConfig('url');
 
-    let qsTransformed = Adapter.replaceQs(qs, { id });
-    let urlTransformed = Adapter.replaceString(url, { id });
+    let qsTransformed = await Adapter.replaceQs(qs, { id });
+    let urlTransformed = await Adapter.replaceString(url, { id });
 
     const data = await this.request({
       ...requestOptions,
@@ -144,23 +146,58 @@ class Adapter {
       qs: qsTransformed,
     });
 
-    return Adapter.transformResult(data, result, { input: 'json', output: 'string' });
+    return Adapter.transformResult(data, result, { input: 'json', raw: true, output: 'string' });
   }
 
-  private static replaceString(str: string, params: Record<string, any>) {
+  private static async replaceString(str: string, params: Record<string, any>) {
+    const list = str.match(/(?<={{)(.+)(?=}})/g);
+
+    if (!list) {
+      return str;
+    }
+
+    const jqList = await Promise.all(list.map((match) => {
+      const v = match.trim();
+
+      if (/\|/.test(v)) {
+        const [key, rule] = v.split(/\s*\|\s*/);
+        const value = (params[key.trim()] || key.trim());
+
+        return Adapter.transformResult(value, rule, {
+          input: 'string', rawInput: true, raw: true, output: 'string',
+        });
+      }
+
+      return undefined;
+    }));
+
+
+    let index = -1;
     return str.replace(/{{(.+)}}/, (_, $1) => {
+      index += 1;
+
+      const v = $1.trim();
+      if (/\|/.test(v)) {
+        return jqList[index];
+      }
+
       return params[$1.trim()];
     });
   }
 
-  private static replaceQs(qs: Record<string, string | number>, params: Record<string, any>) {
-    return fromPairs(Object.entries(qs).map(([key, value]) => {
-      if (typeof value === 'number') {
-        return [key, value];
-      }
+  private static async replaceQs(qs: Record<string, string | number>, params: Record<string, any>) {
+    const list = await Promise.all(
+      Object.entries(qs).map(async ([key, value]) => {
+        if (typeof value === 'number') {
+          return [key, value];
+        }
 
-      return [key, Adapter.replaceString(value, params)];
-    }));
+        const r = await Adapter.replaceString(value, params);
+        return [key, r];
+      })
+    );
+
+    return fromPairs(list);
   }
 
   private static async transformResult<T = any>(

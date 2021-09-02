@@ -20,13 +20,24 @@ const config = {
     },
 
     result: `{
-      id: .data.musicname, 
+      id: ("adapter-ovva-migu-" + "{{ keyword }}"), 
       name: .data.musicname, 
       artists: [{name: .data.singer}], 
       url: .data.musicurl, 
       picture: .data.image,
       lyric: .data.lyric, 
     }`,
+  },
+
+  url: {
+    url: '/',
+    qs: {
+      p: 1,
+      sc: 1,
+      n: 1,
+      msg: '{{ id | sub("^adapter-ovva-migu-"; "") }}',
+    },
+    result: '.data.musicurl',
   },
 };
 

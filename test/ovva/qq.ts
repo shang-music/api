@@ -20,12 +20,24 @@ const qq = {
     },
 
     result: `{
-      id: .data.songid | tostring, 
+      id: ("adapter-ovva-qq-" + "{{ keyword }}"), 
+      realId: .data.songid | tostring,
       name: .data.song, 
       artists: [{name: .data.singer}], 
       url: .data.music, 
       picture: .data.picture,  
     }`,
+  },
+  url: {
+    url: '/',
+    qs: {
+      Skey: '',
+      uin: '',
+      n: 1,
+      msg: '{{ id | sub("^adapter-ovva-qq-"; "") }}',
+    },
+
+    result: '.data.music',
   },
 };
 

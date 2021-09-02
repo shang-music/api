@@ -24,20 +24,33 @@ const schema = {
   picture: Joi.string().required(),
 };
 
-test.skip('qq searchOne', async (t) => {
+test('qq searchOne', async (t) => {
   const song = await qqAdapter.searchOne('夜曲');
   const { error } = Joi.validate(song, schema, { convert: false, allowUnknown: true });
   t.is(error, null);
+
+  const v = await qqAdapter.getUrl(song.id);
+
+  t.is(song.url.replace(/\?.*/, ''), v.replace(/\?.*/, ''));
 });
 
-test.skip('migu searchOne', async (t) => {
+test('migu searchOne', async (t) => {
   const song = await miguAdapter.searchOne('夜曲');
   const { error } = Joi.validate(song, schema, { convert: false, allowUnknown: true });
   t.is(error, null);
+
+
+  const v = await miguAdapter.getUrl(song.id);
+
+  t.is(song.url, v);
 });
 
 test('kuwo searchOne', async (t) => {
   const song = await kuwoAdapter.searchOne('小幸运 田馥甄');
   const { error } = Joi.validate(song, schema, { convert: false, allowUnknown: true });
   t.is(error, null);
+
+  const v = await kuwoAdapter.getUrl(song.id);
+
+  t.is(song.url.replace(/.*\//, ''), v.replace(/.*\//, ''));
 });
