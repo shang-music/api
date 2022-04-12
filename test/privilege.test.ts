@@ -48,17 +48,8 @@ let testCaseMap = {
   [Privilege.deny]: [
     {
       provider: Provider.kugou,
-      keyword: 'I FEEL GOOD (Remix) EXID HIPPITY HOP',
-    },
-    {
-      provider: Provider.kugou,
       id: '41AC5854B48A8BFBE3DC43C1C414A464',
     },
-    {
-      provider: Provider.kugou,
-      id: '8073553A6BED5343372176746741682D',
-    },
-
     {
       provider: Provider.netease,
       keyword: '周杰伦 霍元甲 (电影 霍元甲 主题曲)',

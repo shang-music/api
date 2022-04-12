@@ -1,4 +1,4 @@
-import { fromPairs } from 'lodash';
+import { fromPairs, isPlainObject } from 'lodash';
 import { run as jq } from '@s4p/node-jq';
 import { CoreOptions } from 'request';
 import rp from 'request-promise';
@@ -26,7 +26,8 @@ export interface IAdapterConfig {
   };
   url?: {
     url: string;
-    qs: Record<string, string | number>;
+    qs?: Record<string, string | number>;
+    formData?: any;
     result: string;
   };
 }
@@ -92,7 +93,7 @@ class Adapter {
 
     const { result, qs = {}, ...searchOptions } = this.getConfig('search');
 
-    let qsTransformed = Adapter.replaceQs(qs, params);
+    let qsTransformed = await Adapter.replaceQs(qs, params);
 
     const data = await this.request({
       ...searchOptions,
@@ -134,17 +135,12 @@ class Adapter {
 
   async getUrl(id: string): Promise<string> {
     const {
-      result, qs = {}, url, ...requestOptions
+      result, ...requestOptions
     } = this.getConfig('url');
 
-    let qsTransformed = await Adapter.replaceQs(qs, { id });
-    let urlTransformed = await Adapter.replaceString(url, { id });
+    let requestOptionsTransformed: any = await Adapter.replaceRequestOptions(requestOptions, { id });
 
-    const data = await this.request({
-      ...requestOptions,
-      url: urlTransformed,
-      qs: qsTransformed,
-    });
+    const data = await this.request(requestOptionsTransformed);
 
     return Adapter.transformResult(data, result, { input: 'json', raw: true, output: 'string' });
   }
@@ -183,6 +179,37 @@ class Adapter {
 
       return params[$1.trim()];
     });
+  }
+
+  private static async replaceRequestOptions(options: any, params: Record<string, any>): Promise<Record<string, any>> {
+    if (Array.isArray(options)) {
+      return Promise.all(options.map((v) => {
+        return this.replaceRequestOptions(v, params);
+      }));
+    }
+
+    if (!isPlainObject(options)) {
+      return options;
+    }
+
+    const list = Object.keys(options);
+
+    for (let i = 0; i < list.length; i += 1) {
+      const key = list[i];
+      const value = options[key];
+
+      if (typeof value === 'string') {
+        // eslint-disable-next-line no-await-in-loop
+        const r = await Adapter.replaceString(value, params);
+
+        options[key] = r;
+      } else {
+        // eslint-disable-next-line no-await-in-loop
+        options[key] = await this.replaceRequestOptions(value, params);
+      }
+    }
+
+    return options;
   }
 
   private static async replaceQs(qs: Record<string, string | number>, params: Record<string, any>) {

@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@s4p/node-jq": "github:shang-package/node-jq#release",
-    "NeteaseCloudMusicApi": "^4.0.1",
+    "NeteaseCloudMusicApi": "^4.5.11",
     "he": "^1.2.0",
     "lodash": "^4.17.14",
     "request": "^2.88.0",

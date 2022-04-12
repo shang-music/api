@@ -22,9 +22,6 @@ const testCases = [
       //    img:
       //     'http://imge.kugou.com/stdmusic/400/20190318/20190318193735709304.jpg',
       //  },
-      'album.id': 18758462,
-      'album.name': '小幸运',
-      'album.img': 'http://imge.kugou.com/stdmusic/400/20190318/20190318193735709304.jpg',
     },
   },
   {

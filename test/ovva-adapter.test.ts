@@ -1,9 +1,9 @@
 import test from 'ava';
 import Joi from 'joi';
 import { Adapter } from '../src';
-import qq from './ovva/qq';
-import migu from './ovva/migu';
-import kuwo from './ovva/kuwo';
+import qq from './adapters/qq';
+import migu from './adapters/migu';
+import kuwo from './adapters/kuwo';
 
 const qqAdapter = new Adapter(qq);
 const miguAdapter = new Adapter(migu);
@@ -35,7 +35,7 @@ test('qq searchOne', async (t) => {
 });
 
 test('migu searchOne', async (t) => {
-  const song = await miguAdapter.searchOne('夜曲');
+  const song = await miguAdapter.searchOne('十年');
   const { error } = Joi.validate(song, schema, { convert: false, allowUnknown: true });
   t.is(error, null);
 
