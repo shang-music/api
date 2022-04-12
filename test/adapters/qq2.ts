@@ -29,6 +29,19 @@ const qq = {
 
     result: '.downloadLinkMap.LQ',
   },
+  song: {
+    url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
+    qs: {
+      data: '{"songinfo":{"method":"get_song_detail_yqq","module":"music.pf_song_detail_svr","param":{"song_mid":"{{id}}"}}}',
+    },
+
+    result: `{
+      id: .songinfo.data.track_info.mid, 
+      name: .songinfo.data.track_info.name, 
+      artists: .songinfo.data.track_info.singer, 
+      picture: ("https://y.qq.com/music/photo_new/T002R300x300M000" + .songinfo.data.track_info.album.mid + ".jpg"),  
+    }`,
+  },
 };
 
 export default qq;
