@@ -1,4 +1,4 @@
-import { fromPairs, isPlainObject } from 'lodash';
+import { cloneDeep, fromPairs, isPlainObject } from 'lodash';
 import { run as jq } from '@s4p/node-jq';
 import { CoreOptions } from 'request';
 import rp from 'request-promise';
@@ -179,7 +179,7 @@ class Adapter {
   private static async replaceRequestOptions(options: any, params: any): Promise<any> {
     if (Array.isArray(options)) {
       return Promise.all(options.map((v) => {
-        return this.replaceRequestOptions(v, params);
+        return Adapter.replaceRequestOptions(v, params);
       }));
     }
 
@@ -200,7 +200,7 @@ class Adapter {
         options[key] = r;
       } else {
         // eslint-disable-next-line no-await-in-loop
-        options[key] = await this.replaceRequestOptions(value, params);
+        options[key] = await Adapter.replaceRequestOptions(value, params);
       }
     }
 
@@ -236,7 +236,7 @@ class Adapter {
     if (v === undefined) {
       throw new Error(`no support for provider: ${this.config.provider}; key: ${key}`);
     }
-    return v;
+    return cloneDeep(v);
   }
 }
 

@@ -1,5 +1,5 @@
 const qq = {
-  provider: 'qq',
+  provider: 'adapterQQ',
   request: {
     json: true,
     timeout: 10000,
